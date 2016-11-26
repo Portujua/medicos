@@ -1,5 +1,24 @@
 <?php
 	trait Utils {
+        public function check_cedula($post)
+        {
+            $query = $this->db->prepare("
+                select *
+                from Persona
+                where cedula=:ci
+            ");
+
+            $query->execute(array(
+                ":ci" => $post['ci']
+            ));
+
+            $json = array();
+            $json['existe'] = $query->rowCount() > 0 ? true : false;
+            $json['esValido'] = $query->rowCount() == 0 ? true : false;
+
+            return json_encode($json);
+        }
+
 		public function obtener_lugar($post, $lugarfull = array("nombre_completo" => "", "id" => -1, "nombre" => ""), $json = true)
         {
             $query = null;
@@ -62,6 +81,144 @@
             }
             else
                 return $lugarfull;
+        }
+
+        function sendEmail($email)
+        {
+            $json = array();
+
+            // Chequeo que sea apto
+            $query = $this->db->prepare("
+                select email
+                from Persona
+                where usuario=:usuario
+            ");
+
+            $query->execute(array(
+                ":usuario" => $email['usuario']
+            ));
+
+            if ($query->rowCount() > 0)
+            {
+                $email['para'] = $query->fetchAll();
+                $email['para'] = $email['para'][0];
+
+                if ($email['para']['email'] != null)
+                    $email['para'] = $email['para']['email'];
+                else
+                {
+                    $json['error'] = 1;
+                    $json['msg'] = "Error, este usuario no posee un correo electrónico asignado.";
+                    return json_encode($json);
+                }
+            }
+            else
+            {
+                $json['error'] = 1;
+                $json['msg'] = "Error, este usuario no existe.";
+                return json_encode($json);
+            }
+
+            // Envio el correo
+            require "PHPMailer/PHPMailerAutoload.php";
+            
+            $mail = new PHPMailer;
+
+            //$mail->isSMTP();
+            $mail->Timeout = 3;
+            $mail->SMTPDebug = 1;
+            $mail->Host = 'host.caracashosting40.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'recuperar@salazarseijas.com';
+            $mail->Password = 'registerFolks';
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 465; // 587
+
+            $mail->From = 'recuperar@salazarseijas.com';
+            $mail->FromName = 'Contacto';
+            $mail->addAddress($email['para'], $email['usuario']);
+
+            $mail->isHTML(true);
+
+            $mail->Subject = 'Recuperar contraseña';
+            $mail->Body = '
+                Para reestablecer su contraseña por favor acceda al siguiente enlace: <br><br><br>
+                <a href="http://salazarseijas.com/casauslarpietri/#/recuperar/'.$email['usuario'].'" target="_blank">http://salazarseijas.com/casauslarpietri/#/recuperar/'.$email['usuario'].'</a>
+            ';
+            $mail->AltBody = '
+                Para reestablecer su contraseña por favor acceda al siguiente enlace: 
+
+                http://salazarseijas.com/casauslarpietri/#/recuperar/'.$email['usuario'].'
+            ';
+
+            if(!$mail->Send()) 
+            {
+                $json['error'] = 1;
+                $json['msg'] = "Mailer Error: " . $mail->ErrorInfo;
+                return json_encode($json);
+            } else {
+                // Setteo la variable
+                $query = $this->db->prepare("
+                    update Persona set cambiar_contrasena=1
+                    where usuario=:usuario
+                ");
+
+                $query->execute(array(
+                    ":usuario" => $email['usuario']
+                ));
+
+                $json['success'] = 1;
+                $json['msg'] = "Correo de recuperación enviado con éxito.";
+                return json_encode($json);
+            }
+        }
+
+        public function csv_personas()
+        {
+            $csv = array();
+            $csv[] = array("Nombre completo", "Cedula", "Telefonos", "Correo electronico", "Sexo", "Estado Civil", "Direccion", "Facebook", "Twitter", "Instagram");
+
+            $data = json_decode($this->cargar_personas(array()), true);
+            
+            foreach ($data as $d)
+            {
+                $tlfs = "";
+
+                foreach ($d['telefonos'] as $tlf)
+                    $tlfs .= $tlf['numero'] . " (" . $tlf['tipo'] . ")\r\n";
+
+                $csv[] = array(
+                    $d['nombre_completo'],
+                    $d['cedula'],
+                    $tlfs,
+                    $d['email'],
+                    $d['sexo'],
+                    $d['estado_civil'],
+                    $d['direccion'] . ", " . $d['lugar_str'],
+                    isset($d['facebook']) ? $d['facebook'] : "",
+                    isset($d['twitter']) ? $d['twitter'] : "",
+                    isset($d['instagram']) ? $d['instagram'] : ""
+                );
+            }
+
+            return $csv;
+        }
+
+        public function csv_personas_root()
+        {
+            $csv = array();
+            $csv[] = array("Nombre completo", "Cedula", "Fecha de nacimiento");
+
+            $data = json_decode($this->cargar_personas(array()), true);
+            
+            foreach ($data as $d)
+                $csv[] = array(
+                    $d['nombre_completo'],
+                    $d['cedula'],
+                    $d['fecha_nacimiento']
+                );
+
+            return $csv;
         }
 	}
 ?>

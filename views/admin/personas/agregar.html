@@ -9,6 +9,30 @@
 		<p><small>(*) Campos obligatorios</small></p>
 
 		<div class="fila">
+			<p>Cédula (*)</p>
+
+			<div style="width: 9%; float: left;">
+				<select class="selectpicker" data-width="100%" ng-model="persona.tipo_cedula" name="tipo_cedula" required ts-select-fix ng-disabled="editar">
+					<option ng-repeat="s in ['V', 'E']">{{ s }}</option>
+				</select>
+			</div>
+
+			<input type="text" ng-model="persona.cedula" name="cedula" ng-minlength=0 ng-maxlength=32 ng-init="persona.cedula = ''" unique-bd="cedula" ng-model-options="{ updateOn: 'blur' }" placeholder="Cédula" required ng-disabled="editar" ng-pattern="/^[0-9]+$/" style="width: 65% !important;" />
+
+			<div class="tooltip-error" ng-if="agregar.cedula.$error.required && agregar.cedula.$dirty">
+				Debes completar este campo
+
+				<span class="tooltip-arrow"></span>
+			</div>
+
+			<div class="tooltip-error" ng-if="agregar.cedula.$error.unique && agregar.cedula.$dirty">
+				Cédula ya existente.
+
+				<span class="tooltip-arrow"></span>
+			</div>
+		</div>
+
+		<div class="fila">
 			<p>Nombre (*)</p>
 			<input type="text" ng-model="persona.nombre" name="nombre" ng-minlength=1 ng-maxlength=32 required placeholder="Nombre" />
 
@@ -41,17 +65,6 @@
 		</div>
 
 		<div class="fila">
-			<p>Cédula (*)</p>
-			<input type="text" ng-model="persona.cedula" name="cedula" ng-minlength=0 ng-maxlength=32 ng-init="persona.cedula = ''" placeholder="Cédula" required />
-
-			<div class="tooltip-error" ng-if="agregar.cedula.$error.required && agregar.cedula.$dirty">
-				Debes completar este campo
-
-				<span class="tooltip-arrow"></span>
-			</div>
-		</div>
-
-		<div class="fila">
 			<p>Fecha de Nacimiento (*)</p>
 			<div class="datepicker-nacimiento" style="width: 100%;">
 				<input type="text" id="fecha_nac" class="form-control" ng-model="persona.fecha_nacimiento" name="fecha_nac" style="font-size: 11px;" readonly required />
@@ -72,7 +85,7 @@
 
 		<div class="fila" ng-init="cargar_lugares()">
 			<p>Parroquia (*)</p>
-			<input type="text" ng-model="persona.lugar" name="lugar" />
+			<input type="text" ng-model="persona.lugar" name="lugar" ng-minlength=10 />
 
 			<!--<select class="selectpicker" data-live-search="true" data-width="75%" ng-model="persona.lugar" name="lugar" required ts-select-fix>
 				<option ng-repeat="lugar in lugares" value="{{ lugar.id }}" ng-if="lugar.tipo == 'parroquia'">{{ lugar.nombre_completo }}</option>
@@ -99,13 +112,40 @@
 		</div>
 
 		<div class="fila">
+			<p>Formación (*)</p>
+			<select class="selectpicker" data-width="75%" ng-model="persona.formacion" name="formacion" required ts-select-fix>
+				<option ng-repeat="s in ['Básica', 'Diversificada', 'Profesional', 'Pregrado', 'Postgrado']">{{ s }}</option>
+			</select>
+		</div>
+
+		<div class="fila">
+			<p>Nivel educativo (*)</p>
+			<input type="text" ng-model="persona.nivel_educativo" name="nivel_educativo" />
+		</div>
+
+		<div class="fila">
+			<p>Nro. de hijos (*)</p>
+			<input type="text" ng-model="persona.nro_hijos" name="nro_hijos" ng-min=0 ng-pattern="/^[0-9]{1,}$/" />
+		</div>
+
+		<div class="fila">
+			<p>Oficio actual (*)</p>
+			<input type="text" ng-model="persona.oficio" name="oficio" />
+		</div>
+
+		<div class="fila">
 			<p>Correo electrónico</p>
 			<input type="email" ng-model="persona.email" name="email" ng-minlength=0 ng-maxlength=32 placeholder="Email" />
 		</div>
 
 		<div class="fila">
-			<p>Teléfono</p>
+			<p>Teléfono (local)</p>
 			<input type="text" ng-model="persona.telefono" name="tlf" ng-minlength=0 ng-maxlength=32 placeholder="Teléfono" />
+		</div>
+
+		<div class="fila">
+			<p>Teléfono (móvil)</p>
+			<input type="text" ng-model="persona.telefono_movil" name="tlfmovil" ng-minlength=0 ng-maxlength=32 placeholder="Teléfono" />
 		</div>
 
 		<!--<div class="fila">
@@ -113,7 +153,7 @@
 			<input type="text" ng-model="persona.telefono" name="tlf" ng-minlength=0 ng-maxlength=32 ng-init="persona.telefono = ''" placeholder="Teléfono" />
 		</div>-->
 
-		<div class="fila">
+		<!--<div class="fila">
 			<p>Usuario</p>
 			<input type="text" ng-model="persona.usuario" name="usuario" ng-minlength=5 ng-maxlength=32 placeholder="Usuario" ng-model-options="{ updateOn: 'blur' }" unique-bd="usuario" autocomplete="off" />
 
@@ -128,7 +168,7 @@
 
 			<span ng-show="agregar.contrasena.$error.minlength">La contraseña debe contener al menos 5 caracteres</span>
 			<span ng-show="agregar.contrasena.$error.maxlength">Contraseña muy larga!</span>
-		</div>
+		</div>-->
 
 		<div class="fila">
 			<p>Twitter</p>
@@ -140,7 +180,65 @@
 			<input type="text" ng-model="persona.facebook" name="facebook" ng-minlength=0 ng-maxlength=256 placeholder="Usuario o enlace" />
 		</div>
 
-		<div>
+		<div class="fila">
+			<p>Instagram</p>
+			<input type="text" ng-model="persona.instagram" name="instagram" ng-minlength=0 ng-maxlength=256 placeholder="Usuario o enlace" />
+		</div>
+
+		<hr/>
+
+		<h4 ng-init="persona.cursos = []; cargar_cursos();">
+			Cursos realizados
+		</h4>
+
+		<div class="cursos">
+			Curso <br>
+			<select class="selectpicker" data-live-search="true" data-width="75%" ng-model="curso.id" name="curso_id" ts-select-fix>
+				<option ng-repeat="curso in cursos" value="{{ $index }}">{{ curso.nombre }}</option>
+			</select><br><br>
+
+			Fecha 
+			<div class="datepicker-curso" style="width: 75%;">
+				<input type="text" id="fechacurso" class="form-control" ng-model="curso.fecha" name="fechacurso" style="font-size: 11px;" readonly />
+			</div> <br><br>
+
+			Sede 
+			<div style="width: 75%;">
+				<input type="text" id="sedecurso" class="form-control" ng-model="curso.sede" name="sedecurso" style="font-size: 11px;" />
+			</div> <br><br>
+
+			<script type="text/javascript">
+				$('.datepicker-curso input').datepicker({
+					format: 'mm/yyyy',
+					minViewMode: "months"
+				});
+			</script>
+
+			<button type="button" class="btn btn-default" ng-click="anadir_curso()">
+				Añadir
+			</button>
+		</div>
+
+		<table class="table table-striped" ng-if="url.pathname.indexOf('casauslarpietri') != -1">
+			<thead>
+				<th>&nbsp;</th>
+				<th>Nombre del curso</th>
+				<th>Fecha de culminación del curso</th>
+				<th>Sede donde se realizó el curso</th>
+			</thead>
+			<tbody>
+				<tr class="curso" ng-repeat="curso in persona.cursos">
+					<td><span ng-click="eliminar_curso($index)" title="Eliminar">&times;</span></td>
+					<td>{{ curso.nombre }}</td>
+					<td>{{ curso.fecha }}</td>
+					<td>{{ curso.sede }}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<hr/>
+
+		<div ng-if="loginService.getCurrentUser().usuario == 'root'">
 			<h3 ng-init="cargar_permisos(); persona.permisos = '';">Permisos <small class="btn btn-link" ng-click="todos_los_permisos()">Marcar todos</small></h3>
 
 			<div class="categoria_permiso" ng-repeat="categoria in permisos | soloCategorias">

@@ -25,6 +25,25 @@
 			})
 
 
+
+			.when("/cursos", {
+				templateUrl : "views/admin/cursos/cursos.html"
+			})
+			.when("/cursos/agregar", {
+				templateUrl : "views/admin/cursos/agregar.html"
+			})
+			.when("/cursos/editar/:id", {
+				templateUrl : "views/admin/cursos/agregar.html"
+			})
+
+
+
+
+			.when("/recuperar/:usuario", {
+				templateUrl : "views/admin/recuperar.html"
+			})
+
+
 			.otherwise({redirectTo : "/login"});
 	});
 }());

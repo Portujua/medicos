@@ -12,7 +12,7 @@
 		    }
 		};
 
-		$scope.editar = $routeParams.id;
+		$scope.editar = $routeParams.cedula;
 
 		$scope.cargar_personas = function(){
 			RESTService.getPersonas($scope);
@@ -39,6 +39,14 @@
 
 		$scope.cargar_lugares = function(){
 			RESTService.getLugares($scope);
+		}
+
+		$scope.cargar_parroquias = function(){
+			RESTService.getParroquias($scope);
+		}
+
+		$scope.cargar_cursos = function(){
+			RESTService.getCursos($scope);
 		}
 
 		$scope.autocomplete_lugares = function(){
@@ -132,6 +140,19 @@
 					var nac = post.fecha_nacimiento.split('/');
 					post.nacimiento = nac[2] + "-" + nac[1] + "-" + nac[0];
 
+					if (post.facebook && post.facebook.indexOf("https://") != -1)
+						post.facebook = post.facebook.match(/\.com\/([A-Za-z0-9\_\-\.]+)([\/\?])?(.+)?/)[1];
+
+					if (post.twitter && post.twitter.indexOf("https://") != -1)
+						post.twitter = post.twitter.match(/\.com\/([A-Za-z0-9\_\-\.]+)([\/\?])?(.+)?/)[1];
+
+					if (post.instagram && post.instagram.indexOf("https://") != -1)
+						post.instagram = post.instagram.match(/\.com\/([A-Za-z0-9\_\-\.]+)([\/\?])?(.+)?/)[1];
+
+					if (post.facebook) post.facebook.replace("@", "");
+					if (post.twitter) post.twitter.replace("@", "");
+					if (post.instagram) post.instagram.replace("@", "");
+
 					var fn = "agregar_persona";
 					var msg = "Persona añadida con éxito";
 
@@ -182,6 +203,27 @@
 
 		$scope.seleccionar = function(p){
 			$scope.p_ = p;
+		}
+
+		$scope.anadir_curso = function(){
+			$scope.persona.cursos.push({
+				id: $scope.cursos[$scope.curso.id].id,
+				nombre: $scope.cursos[$scope.curso.id].nombre,
+				fecha: $scope.curso.fecha,
+				sede: $scope.curso.sede
+			});
+
+			$scope.curso = null;
+		}
+
+		$scope.eliminar_curso = function(index){
+			var aux = [];
+
+			for (var i = 0; i < $scope.persona.cursos.length; i++)
+				if (i != index)
+					aux.push($scope.persona.cursos[i]);
+
+			$scope.persona.cursos = aux;
 		}
 
 		if ($routeParams.cedula)

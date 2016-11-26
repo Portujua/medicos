@@ -14,6 +14,7 @@ create table Persona (
 	segundo_nombre varchar(32),
 	apellido varchar(32) not null,
 	segundo_apellido varchar(32),
+	tipo_cedula varchar(1),
 	cedula varchar(32),
 	email varchar(128),
 	usuario varchar(32),
@@ -27,6 +28,12 @@ create table Persona (
 	direccion varchar(256) not null,
 	twitter varchar(256),
 	facebook varchar(256),
+	instagram varchar(256),
+	formacion varchar(128),
+	nro_hijos int,
+	oficio varchar(256),
+	nivel_educativo varchar(256),
+	cambiar_contrasena tinyint(1) default 0,
 	primary key(id),
 	unique(cedula),
 	foreign key (lugar) references Lugar(id)
@@ -83,4 +90,22 @@ create table Log_Login (
 	fecha datetime not null,
 	username varchar(32) not null,
 	primary key(id)
+) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8;
+
+create table Curso (
+	id int not null auto_increment,
+	nombre varchar(128),
+	estado tinyint(1) default 1,
+	primary key(id)
+) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8;
+
+create table Persona_Curso (
+	id int not null auto_increment,
+	persona int not null,
+	curso int not null,
+	fecha date not null,
+	sede varchar(256) not null,
+	primary key(id),
+	foreign key (persona) references Persona(id),
+	foreign key (curso) references Curso(id)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8;

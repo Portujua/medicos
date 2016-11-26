@@ -1,5 +1,5 @@
 <div class="navbar container" ng-show="loginService.isLoggedIn()">
-	<a href="./#/"><img src="img/lapiz.png" /></a>
+	<a href="./#/"><img src="img/{{ url.pathname.indexOf('casauslarpietri') != -1 ? 'logo.jpg' : 'lapiz.png' }}" /></a>
 
 	<div class="navbar-right">
 		<strong>{{ loginService.getCurrentUser().nombre + " " + loginService.getCurrentUser().apellido }}</strong> <span class="glyphicon glyphicon-off pull-right" ng-click="logout()" style="color: #c9302c !important; border: none;" aria-hidden="true" title="Cerrar sesión"></span>
@@ -18,6 +18,10 @@
 			<ul class="dropdown-menu">
 				<a href="./#/personas" ng-show="loginService.menuAdminPersonas()">
 					<li>Personas</li>
+				</a>
+
+				<a href="./#/cursos" ng-show="loginService.menuAdminCursos() && url.pathname.indexOf('casauslarpietri') != -1">
+					<li>Cursos</li>
 				</a>
 			</ul>
 		</div>

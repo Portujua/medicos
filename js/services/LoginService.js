@@ -1,7 +1,7 @@
 (function(){
 	angular.module("adminapp").factory('LoginService', function($http, $location, AlertService, $localStorage, $interval){
 		return {
-			user: $localStorage.user ? $localStorage.user : null,
+			user: null,
 			isLoggedIn: function(){
 				return this.user != null;
 			},
@@ -41,12 +41,19 @@
 
 				return this.user.personas_agregar || this.user.personas_editar || this.user.personas_deshabilitar;
 			},
+			menuAdminCursos: function(){
+				if (!this.isLoggedIn()) return false;
+
+				if (this.user.username == "root") return true;
+
+				return this.user.cursos_agregar || this.user.cursos_editar || this.user.cursos_deshabilitar;
+			},
 			menuAdmin: function(){
 				if (!this.isLoggedIn()) return false;
 
 				if (this.user.username == "root") return true;
 
-				return this.menuAdminPersonas();
+				return this.menuAdminPersonas() || this.menuAdminCursos();
 			}
 		};
 	})
