@@ -31,16 +31,15 @@
                     u.nombre as nombre, 
                     u.apellido as apellido, 
                     u.cedula as cedula, 
+                    u.tipo_cedula as tipo_cedula, 
                     u.email as email, 
                     u.sexo as sexo,
                     u.estado_civil as estado_civil,
                     u.direccion as direccion,
-                    u.twitter as twitter,
-                    u.facebook as facebook,
                     u.lugar as lugar_id,
                     date_format(u.fecha_nacimiento, '%d/%m/%Y') as fecha_nacimiento, 
                     date_format(u.fecha_creado, '%d/%m/%Y') as fecha_creado
-                from Persona as u
+                from Medico as u
                 where u.usuario=:username and u.contrasena=:password and u.estado=1
                 limit 1
             ");
@@ -60,7 +59,7 @@
                 $query = $this->db->prepare("
                     select *
                     from Telefono 
-                    where persona=:pid
+                    where medico=:pid
                 ");
 
                 $query->execute(array(
@@ -68,34 +67,6 @@
                 ));
 
                 $user['telefonos'] = $query->fetchAll();
-
-                /* Obtengo los permisos */
-                $query_root = "
-                    select nombre
-                    from Permiso as p
-                ";
-
-                $query_no_root = "
-                    select nombre
-                    from Permiso_Asignado as pa, Permiso as p
-                    where pa.permiso=p.id and pa.usuario=:uid
-                ";
-
-                $query = null;
-
-                if ($post['username'] == "root")
-                    $query = $this->db->prepare($query_root);
-                else
-                    $query = $this->db->prepare($query_no_root);
-
-                $query->execute(array(
-                    ":uid" => $user['id']
-                ));
-
-                $permisos = $query->fetchAll();
-
-                foreach ($permisos as $p)
-                    $user[$p['nombre']] = 1;
 
                 /* Obtengo la ultima conexion */
                 $query = $this->db->prepare("

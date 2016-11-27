@@ -4,12 +4,31 @@
         {
             $query = $this->db->prepare("
                 select *
-                from Persona
+                from Medico
                 where cedula=:ci
             ");
 
             $query->execute(array(
-                ":ci" => $post['ci']
+                ":ci" => $post['val']
+            ));
+
+            $json = array();
+            $json['existe'] = $query->rowCount() > 0 ? true : false;
+            $json['esValido'] = $query->rowCount() == 0 ? true : false;
+
+            return json_encode($json);
+        }
+
+        public function check_usuario($post)
+        {
+            $query = $this->db->prepare("
+                select *
+                from Medico
+                where usuario=:usuario
+            ");
+
+            $query->execute(array(
+                ":usuario" => $post['val']
             ));
 
             $json = array();

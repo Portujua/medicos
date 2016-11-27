@@ -2,7 +2,7 @@
 Options -Indexes
 
 # Pagina de 404 not found
-ErrorDocument 404 /casauslarpietri/404.html
+ErrorDocument 404 /medicos/404.html
 
 # Prohibir acceso a .htaccess
 <Files ~ “^.*\.([Hh][Tt][Aa])”>
@@ -14,19 +14,17 @@ satisfy all
 RewriteEngine on
 
 # Prohibir acceso a carpeta bd
-RewriteRule ^bd.*$ /casauslarpietri/ [R=301,L]
+RewriteRule ^bd.*$ /medicos/ [R=301,L]
 
 # Reglas para la API
-RewriteRule ^api/lugares$ /casauslarpietri/php/run.php?fn=cargar_lugares [QSA,L]
-RewriteRule ^api/lugares/parroquias$ /casauslarpietri/php/run.php?fn=cargar_parroquias [QSA,L]
-RewriteRule ^api/personas$ /casauslarpietri/php/run.php?fn=cargar_personas [QSA,L]
-RewriteRule ^api/permisos$ /casauslarpietri/php/run.php?fn=cargar_permisos [QSA,L]
-RewriteRule ^api/cursos$ /casauslarpietri/php/run.php?fn=cargar_cursos [QSA,L]
+RewriteRule ^api/lugares$ /medicos/php/run.php?fn=cargar_lugares [QSA,L]
+RewriteRule ^api/lugares/parroquias$ /medicos/php/run.php?fn=cargar_parroquias [QSA,L]
+RewriteRule ^api/medicos$ /medicos/php/run.php?fn=cargar_medicos [QSA,L]
+RewriteRule ^api/telefonos/tipos$ /medicos/php/run.php?fn=cargar_tipos_telefonos [QSA,L]
 
-RewriteRule ^api/lugar/(.+)$ /casauslarpietri/php/run.php?fn=cargar_lugar&lid=$1 [QSA,L]
-RewriteRule ^api/persona/(.+)$ /casauslarpietri/php/run.php?fn=cargar_persona&cedula=$1 [QSA,L]
-RewriteRule ^api/curso/(.+)$ /casauslarpietri/php/run.php?fn=cargar_curso&id=$1 [QSA,L]
+RewriteRule ^api/lugar/(.+)$ /medicos/php/run.php?fn=cargar_lugar&lid=$1 [QSA,L]
+RewriteRule ^api/medico/(.+)$ /medicos/php/run.php?fn=cargar_medico&cedula=$1 [QSA,L]
 
-RewriteRule ^api/check/cedula/(.+)$ /casauslarpietri/php/run.php?fn=check_cedula&ci=$1 [QSA,L]
+RewriteRule ^api/check/(.+)/(.+)$ /medicos/php/run.php?fn=check_$1&val=$2 [QSA,L]
 
-RewriteRule ^api/export/(.+)$ /casauslarpietri/php/export.php?t=$1 [QSA,L]
+RewriteRule ^api/export/(.+)$ /medicos/php/export.php?t=$1 [QSA,L]

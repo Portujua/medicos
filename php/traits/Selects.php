@@ -1,18 +1,5 @@
 <?php
-	trait Selects {
-        public function cargar_permisos($post)
-        {
-            $query = $this->db->prepare("
-                select p.id as id, p.nombre as nombre, p.descripcion as descripcion, p.riesgo as riesgo, pc.nombre as categoria
-                from Permiso as p, Permiso_Categoria as pc
-                where p.categoria=pc.id
-                order by pc.id asc
-            ");
-            $query->execute();
-
-            return json_encode($query->fetchAll());
-        }
-        
+	trait Selects {        
 		public function cargar_lugares($post)
         {
             $query = $this->db->prepare("
@@ -55,7 +42,7 @@
             return json_encode($query->fetchAll());
         }
 
-        public function cargar_personas($post, $query_extra = "")
+        public function cargar_medicos($post, $query_extra = "")
         {
             $query = $this->db->prepare("
                 select
@@ -81,100 +68,51 @@
                     p.estado_civil as estado_civil,
                     p.estado as estado,
                     (select nombre_completo from Lugar where id=p.lugar) as lugar,
-                    p.direccion as direccion,
-                    p.twitter as twitter,
-                    p.facebook as facebook,
-                    p.instagram as instagram,
-                    p.formacion as formacion,
-                    p.nro_hijos as nro_hijos,
-                    p.oficio as oficio,
-                    p.nivel_educativo as nivel_educativo
-                from Persona as p
+                    p.direccion as direccion
+                from Medico as p
                 where p.id > 1
                 ".$query_extra."
             ");
 
             $query->execute();
-            $personas = $query->fetchAll();
+            $medicos = $query->fetchAll();
 
-            for ($i = 0; $i < count($personas); $i++)
+            for ($i = 0; $i < count($medicos); $i++)
             {
-                $personas[$i]["permisos"] = "";
-                $personas[$i]["snombre"] = $personas[$i]["segundo_nombre"];
-                $personas[$i]["sapellido"] = $personas[$i]["segundo_apellido"];
+                $medicos[$i]["snombre"] = $medicos[$i]["segundo_nombre"];
+                $medicos[$i]["sapellido"] = $medicos[$i]["segundo_apellido"];
 
                 /* Telefonos */
                 $query = $this->db->prepare("
                     select 
-                        t.tlf as numero,
+                        t.tlf as tlf,
                         tt.nombre as tipo
                     from Telefono as t, Telefono_Tipo as tt
-                    where t.tipo=tt.id and t.persona=:pid
+                    where t.tipo=tt.id and t.medico=:pid
                 ");
 
                 $query->execute(array(
-                    ":pid" => $personas[$i]['id']
+                    ":pid" => $medicos[$i]['id']
                 ));
 
-                $personas[$i]['telefonos'] = $query->fetchAll();
-
-                for ($k = 0; $k < count($personas[$i]['telefonos']); $k++)
-                {
-                    if ($personas[$i]['telefonos'][$k]['tipo'] == 'Casa')
-                        $personas[$i]['telefono'] = $personas[$i]['telefonos'][$k]['numero'];
-                    else
-                        $personas[$i]['telefono_movil'] = $personas[$i]['telefonos'][$k]['numero'];
-                }
-
-                /* Permisos */
-                $query = $this->db->prepare("
-                    select p.id as id
-                    from Permiso_Asignado as pa, Permiso as p
-                    where pa.permiso=p.id and pa.usuario=:usuario
-                ");
-
-                $query->execute(array(
-                    ":usuario" => $personas[$i]['id']
-                ));
-
-                $permisos = $query->fetchAll();
-
-                foreach ($permisos as $p)
-                    $personas[$i]["permisos"] .= "[" . $p['id'] . "]";
-
-                /* Cursos */
-                $query = $this->db->prepare("
-                    select 
-                        c.id as id,
-                        c.nombre as nombre,
-                        date_format(pc.fecha, '%m/%Y') as fecha,
-                        pc.sede as sede
-                    from Curso as c, Persona_Curso as pc
-                    where pc.curso=c.id and pc.persona=:pid
-                ");
-
-                $query->execute(array(
-                    ":pid" => $personas[$i]['id']
-                ));
-
-                $personas[$i]['cursos'] = $query->fetchAll();
+                $medicos[$i]['telefonos'] = $query->fetchAll();
             }
 
-            return json_encode($personas);
+            return json_encode($medicos);
         }
 
-        public function cargar_persona($post)
+        public function cargar_medico($post)
         {
-            $personas = json_decode($this->cargar_personas(array(), " and p.cedula='".$post['cedula']."'"));
+            $medicos = json_decode($this->cargar_medicos(array(), " and p.cedula='".$post['cedula']."'"));
 
-            return json_encode($personas[0]);
+            return json_encode($medicos[0]);
         }
 
-        public function cargar_cursos($post)
+        public function cargar_tipos_telefonos($post)
         {
             $query = $this->db->prepare("
                 select *
-                from Curso
+                from Telefono_Tipo
             ");
 
             $query->execute();

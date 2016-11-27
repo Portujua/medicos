@@ -2,12 +2,12 @@
 	trait Updates {
 		//abstract public function generar_tokens_guia($post);
 
-		public function cambiar_estado_persona($post)
+		public function cambiar_estado_medico($post)
         {
             $json = array();
 
             $query = $this->db->prepare("
-                update Persona set estado=:estado where id=:pid
+                update Medico set estado=:estado where id=:pid
             ");
 
             $query->execute(array(
@@ -17,7 +17,7 @@
 
             $json["status"] = "ok";
             $json["ok"] = true;
-            $json["msg"] = "La persona fue ".($post['estado'] == 1 ? "habilitada" : "deshabilitada")." correctamente.";
+            $json["msg"] = "El medico fue ".($post['estado'] == 1 ? "habilitada" : "deshabilitada")." correctamente.";
 
             return json_encode($json);
         }
@@ -27,7 +27,7 @@
             $json = array();
 
             $query = $this->db->prepare("
-                select * from Persona where usuario=:usuario and cambiar_contrasena=1
+                select * from Medico where usuario=:usuario and cambiar_contrasena=1
             ");
 
             $query->execute(array(
@@ -37,7 +37,7 @@
             if ($query->rowCount() > 0)
             {
                 $query = $this->db->prepare("
-                    update Persona set 
+                    update Medico set 
                         contrasena=:contrasena,
                         cambiar_contrasena=0
                     where usuario=:usuario
@@ -62,12 +62,12 @@
             return json_encode($json);
         }
 
-        public function editar_persona($post)
+        public function editar_medico($post)
         {
             $json = array();
 
             $query = $this->db->prepare("
-                update Persona set 
+                update Medico set 
                     nombre=:nombre, 
                     segundo_nombre=:snombre, 
                     apellido=:apellido, 
@@ -81,14 +81,7 @@
                     sexo=:sexo, 
                     estado_civil=:estado_civil, 
                     lugar=(select id from Lugar where nombre_completo=:lugar), 
-                    direccion=:direccion, 
-                    twitter=:twitter, 
-                    facebook=:facebook,
-                    instagram=:instagram,
-                    formacion=:formacion,
-                    nro_hijos=:nro_hijos,
-                    oficio=:oficio,
-                    nivel_educativo=:nivel_educativo
+                    direccion=:direccion
                 where id=:id
             ");
 
@@ -107,19 +100,12 @@
                 ":sexo" => $post['sexo'],
                 ":estado_civil" => $post['estado_civil'],
                 ":lugar" => $post['lugar'],
-                ":direccion" => isset($post['direccion']) ? strtoupper($post['direccion']) : null,
-                ":twitter" => isset($post['twitter']) ? $post['twitter'] : null,
-                ":facebook" => isset($post['facebook']) ? $post['facebook'] : null,
-                ":instagram" => isset($post['instagram']) ? $post['instagram'] : null,
-                ":formacion" => $post['formacion'],
-                ":nro_hijos" => isset($post['nro_hijos']) ? $post['nro_hijos'] : null,
-                ":oficio" => isset($post['oficio']) ? $post['oficio'] : null,
-                ":nivel_educativo" => isset($post['nivel_educativo']) ? $post['nivel_educativo'] : null
+                ":direccion" => isset($post['direccion']) ? strtoupper($post['direccion']) : null
             ));
 
             /* Borro los telefonos viejos */
             $query = $this->db->prepare("
-                delete from Telefono where persona=:id
+                delete from Telefono where medico=:id
             ");
 
             $query->execute(array(
@@ -127,94 +113,20 @@
             ));
 
             /* Añado los nuevos */
-            $post['telefonos'] = array();
-
-            if (isset($post['telefono']))
-                $post['telefonos'][] = array(
-                    "tlf" => $post['telefono'],
-                    "tipo" => 2
-                );
-
-            if (isset($post['telefono_movil']))
-                $post['telefonos'][] = array(
-                    "tlf" => $post['telefono_movil'],
-                    "tipo" => 1
-                );
-
-            foreach ($post['telefonos'] as $tlf)
-            {
-               $query = $this->db->prepare("
-                    insert into Telefono (tlf, tipo, persona) 
-                    values (:tlf, :tipo, (select id from Persona where cedula=:cedula))
-                ");
-
-                $query->execute(array(
-                    ":tlf" => $tlf['tlf'],
-                    ":tipo" => $tlf['tipo'],
-                    ":cedula" => $post['cedula']
-                )); 
-            }
-
-            /* Borro los permisos */
-            $query = $this->db->prepare("
-                delete from Permiso_Asignado where usuario=:uid
-            ");
-
-            $query->execute(array(
-                ":uid" => $post['id']
-            ));
-
-            /* Añado los permisos */
-            $permisos = explode("]", $post['permisos']);
-
-            foreach ($permisos as $p_)
-            {
-                $p = str_replace("[", "", $p_);
-
-                if (strlen($p) == 0) continue;
-
-                $query = $this->db->prepare("
-                    insert into Permiso_Asignado (permiso, usuario)
-                    values (:pid, :uid)
-                ");
-
-                $query->execute(array(
-                    ":pid" => $p,
-                    ":uid" => $post['id']
-                ));
-            }
-
-            /* Borro los cursos */
-            $query = $this->db->prepare("
-                delete from Persona_Curso where persona=:uid
-            ");
-
-            $query->execute(array(
-                ":uid" => $post['id']
-            ));
-
-            /* Cursos */
-            if (isset($post['cursos']))
-            {
-                foreach ($post['cursos'] as $c)
+            if (isset($post['telefonos']))
+                foreach ($post['telefonos'] as $tlf)
                 {
-                    $s = explode("/", $c['fecha']);
-                    //$fecha = $s[2] . "-" . $s[1] . "-" . $s[0];
-                    $fecha = $s[1] . "-" . $s[0] . "-01";
-
-                    $query = $this->db->prepare("
-                        insert into Persona_Curso (curso, persona, fecha, sede)
-                        values (:curso, :persona, :fecha, :sede)
+                   $query = $this->db->prepare("
+                        insert into Telefono (tlf, tipo, medico) 
+                        values (:tlf, (select id from Telefono_Tipo where nombre=:tipo), (select id from Medico where cedula=:cedula))
                     ");
 
                     $query->execute(array(
-                        ":curso" => $c['id'],
-                        ":persona" => $post['id'],
-                        ":fecha" => $fecha,
-                        ":sede" => $c['sede'],
-                    ));
+                        ":tlf" => $tlf['tlf'],
+                        ":tipo" => $tlf['tipo'],
+                        ":cedula" => $post['cedula']
+                    )); 
                 }
-            }
 
             $json["status"] = "ok";
             $json["ok"] = true;

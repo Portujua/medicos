@@ -34,26 +34,19 @@
 			getCurrentUser: function(){
 				return this.user;
 			},
-			menuAdminPersonas: function(){
+			menuAdminMedicos: function(){
 				if (!this.isLoggedIn()) return false;
 
 				if (this.user.username == "root") return true;
 
-				return this.user.personas_agregar || this.user.personas_editar || this.user.personas_deshabilitar;
-			},
-			menuAdminCursos: function(){
-				if (!this.isLoggedIn()) return false;
-
-				if (this.user.username == "root") return true;
-
-				return this.user.cursos_agregar || this.user.cursos_editar || this.user.cursos_deshabilitar;
+				return this.user.medicos_agregar || this.user.medicos_editar || this.user.medicos_deshabilitar;
 			},
 			menuAdmin: function(){
 				if (!this.isLoggedIn()) return false;
 
 				if (this.user.username == "root") return true;
 
-				return this.menuAdminPersonas() || this.menuAdminCursos();
+				return this.menuAdminMedicos();
 			}
 		};
 	})

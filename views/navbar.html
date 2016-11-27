@@ -1,5 +1,5 @@
 <div class="navbar container" ng-show="loginService.isLoggedIn()">
-	<a href="./#/"><img src="img/{{ url.pathname.indexOf('casauslarpietri') != -1 ? 'logo.jpg' : 'lapiz.png' }}" /></a>
+	<a href="./#/"><img src="img/logo.png" /></a>
 
 	<div class="navbar-right">
 		<strong>{{ loginService.getCurrentUser().nombre + " " + loginService.getCurrentUser().apellido }}</strong> <span class="glyphicon glyphicon-off pull-right" ng-click="logout()" style="color: #c9302c !important; border: none;" aria-hidden="true" title="Cerrar sesión"></span>
@@ -10,18 +10,14 @@
 	</div>
 
 	<div class="navbar-center">
-		<div class="btn-group" ng-show="loginService.menuAdmin()">
+		<div class="btn-group">
 			<button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				Administración <span class="caret"></span>
 			</button>
 
 			<ul class="dropdown-menu">
-				<a href="./#/personas" ng-show="loginService.menuAdminPersonas()">
-					<li>Personas</li>
-				</a>
-
-				<a href="./#/cursos" ng-show="loginService.menuAdminCursos() && url.pathname.indexOf('casauslarpietri') != -1">
-					<li>Cursos</li>
+				<a href="./#/medicos">
+					<li>Médicos</li>
 				</a>
 			</ul>
 		</div>
