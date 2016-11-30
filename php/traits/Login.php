@@ -57,6 +57,8 @@
             {
                 $user = $u[0];
 
+                $user['es_admin'] = intval($user['es_admin']) == 0 ? false : true;
+
                 /* Obtengo los telefonos */
                 $query = $this->db->prepare("
                     select *
