@@ -15,7 +15,7 @@
         use Login, Inserts, Updates, Utils, Selects, Deletes;
 
         // local, main, test
-        private $connect_to = "local";
+        private $connect_to = "main";
 
 		private $db;
 
@@ -32,9 +32,9 @@
             }
             elseif ($this->connect_to == "main")
             {
-                $this->username = "salazars_eduardo";
+                $this->username = "ejloren1_admin";
                 $this->password = "21115476";
-                $this->dsn = "mysql:dbname=salazars_casauslarpietri;host=localhost";
+                $this->dsn = "mysql:dbname=ejloren1_medicos;host=localhost";
             }
             elseif ($this->connect_to == "main2")
             {
