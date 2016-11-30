@@ -42,7 +42,7 @@
                     (case when u.usuario='root' then 1 else 0 end) as es_admin,
                     1 as es_medico
                 from Medico as u
-                where u.usuario=:username and u.contrasena=:password and u.estado=1
+                where u.usuario=upper(:username) and u.contrasena=:password and u.estado=1
                 limit 1
             ");
 
