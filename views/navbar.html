@@ -11,13 +11,25 @@
 
 	<div class="navbar-center">
 		<div class="btn-group">
-			<button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			<button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-show="loginService.getCurrentUser().es_admin">
 				Administración <span class="caret"></span>
 			</button>
 
 			<ul class="dropdown-menu">
 				<a href="./#/medicos">
 					<li>Médicos</li>
+				</a>
+			</ul>
+		</div>
+
+		<div class="btn-group">
+			<button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-show="loginService.getCurrentUser().es_medico">
+				Menú <span class="caret"></span>
+			</button>
+
+			<ul class="dropdown-menu">
+				<a href="./#/pacientes">
+					<li>Pacientes</li>
 				</a>
 			</ul>
 		</div>

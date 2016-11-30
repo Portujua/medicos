@@ -38,7 +38,9 @@
                     u.direccion as direccion,
                     u.lugar as lugar_id,
                     date_format(u.fecha_nacimiento, '%d/%m/%Y') as fecha_nacimiento, 
-                    date_format(u.fecha_creado, '%d/%m/%Y') as fecha_creado
+                    date_format(u.fecha_creado, '%d/%m/%Y') as fecha_creado,
+                    (case when u.usuario='root' then 1 else 0 end) as es_admin,
+                    1 as es_medico
                 from Medico as u
                 where u.usuario=:username and u.contrasena=:password and u.estado=1
                 limit 1
