@@ -109,7 +109,7 @@
             // Chequeo que sea apto
             $query = $this->db->prepare("
                 select email
-                from Persona
+                from Medico
                 where usuario=:usuario
             ");
 
@@ -146,14 +146,14 @@
             //$mail->isSMTP();
             $mail->Timeout = 3;
             $mail->SMTPDebug = 1;
-            $mail->Host = 'host.caracashosting40.com';
+            $mail->Host = 'mail.ejlorenzo.com.ve';
             $mail->SMTPAuth = true;
-            $mail->Username = 'recuperar@salazarseijas.com';
-            $mail->Password = 'registerFolks';
+            $mail->Username = 'recuperar@ejlorenzo.com.ve';
+            $mail->Password = '21115476';
             $mail->SMTPSecure = 'tls';
             $mail->Port = 465; // 587
 
-            $mail->From = 'recuperar@salazarseijas.com';
+            $mail->From = 'recuperar@ejlorenzo.com.ve';
             $mail->FromName = 'Contacto';
             $mail->addAddress($email['para'], $email['usuario']);
 
@@ -162,12 +162,12 @@
             $mail->Subject = 'Recuperar contraseña';
             $mail->Body = '
                 Para reestablecer su contraseña por favor acceda al siguiente enlace: <br><br><br>
-                <a href="http://salazarseijas.com/casauslarpietri/#/recuperar/'.$email['usuario'].'" target="_blank">http://salazarseijas.com/casauslarpietri/#/recuperar/'.$email['usuario'].'</a>
+                <a href="http://ejlorenzo.com.ve/medicos/#/recuperar/'.$email['usuario'].'" target="_blank">http://ejlorenzo.com.ve/medicos/#/recuperar/'.$email['usuario'].'</a>
             ';
             $mail->AltBody = '
                 Para reestablecer su contraseña por favor acceda al siguiente enlace: 
 
-                http://salazarseijas.com/casauslarpietri/#/recuperar/'.$email['usuario'].'
+                http://ejlorenzo.com.ve/medicos/#/recuperar/'.$email['usuario'].'
             ';
 
             if(!$mail->Send()) 
@@ -178,7 +178,7 @@
             } else {
                 // Setteo la variable
                 $query = $this->db->prepare("
-                    update Persona set cambiar_contrasena=1
+                    update Medico set cambiar_contrasena=1
                     where usuario=:usuario
                 ");
 
