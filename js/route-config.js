@@ -26,6 +26,19 @@
 
 
 
+			// Admin
+			.when("/pacientes", {
+				templateUrl : "views/admin/pacientes/pacientes.html"
+			})
+			.when("/pacientes/agregar", {
+				templateUrl : "views/admin/pacientes/agregar.html"
+			})
+			.when("/pacientes/editar/:cedula", {
+				templateUrl : "views/admin/pacientes/agregar.html"
+			})
+
+
+
 
 			.when("/recuperar/:usuario", {
 				templateUrl : "views/admin/recuperar.html"

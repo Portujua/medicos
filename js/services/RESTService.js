@@ -8,6 +8,13 @@
 				});
 			},
 
+			getPacientes: function(s){
+				$http.get("api/pacientes").then(function(obj){
+					s.pacientes = obj.data;
+					$timeout(function(){$('.selectpicker').selectpicker('refresh');}, 500);
+				});
+			},
+
 			getTiposTelefonos: function(s){
 				$http.get("api/telefonos/tipos").then(function(obj){
 					s.tipos_telefonos = obj.data;

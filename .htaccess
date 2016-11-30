@@ -20,10 +20,12 @@ RewriteRule ^bd.*$ /medicos/ [R=301,L]
 RewriteRule ^api/lugares$ /medicos/php/run.php?fn=cargar_lugares [QSA,L]
 RewriteRule ^api/lugares/parroquias$ /medicos/php/run.php?fn=cargar_parroquias [QSA,L]
 RewriteRule ^api/medicos$ /medicos/php/run.php?fn=cargar_medicos [QSA,L]
+RewriteRule ^api/pacientes$ /medicos/php/run.php?fn=cargar_pacientes [QSA,L]
 RewriteRule ^api/telefonos/tipos$ /medicos/php/run.php?fn=cargar_tipos_telefonos [QSA,L]
 
 RewriteRule ^api/lugar/(.+)$ /medicos/php/run.php?fn=cargar_lugar&lid=$1 [QSA,L]
 RewriteRule ^api/medico/(.+)$ /medicos/php/run.php?fn=cargar_medico&cedula=$1 [QSA,L]
+RewriteRule ^api/paciente/(.+)$ /medicos/php/run.php?fn=cargar_paciente&cedula=$1 [QSA,L]
 
 RewriteRule ^api/check/(.+)/(.+)$ /medicos/php/run.php?fn=check_$1&val=$2 [QSA,L]
 

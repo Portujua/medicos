@@ -19,6 +19,25 @@
             return json_encode($json);
         }
 
+        public function check_cedula_paciente($post)
+        {
+            $query = $this->db->prepare("
+                select *
+                from Paciente
+                where cedula=:ci
+            ");
+
+            $query->execute(array(
+                ":ci" => $post['val']
+            ));
+
+            $json = array();
+            $json['existe'] = $query->rowCount() > 0 ? true : false;
+            $json['esValido'] = $query->rowCount() == 0 ? true : false;
+
+            return json_encode($json);
+        }
+
         public function check_usuario($post)
         {
             $query = $this->db->prepare("

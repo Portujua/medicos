@@ -120,6 +120,72 @@
             return json_encode($query->fetchAll());
         }
 
+        public function cargar_pacientes($post, $query_extra = "")
+        {
+            $query = $this->db->prepare("
+                select
+                    p.id as id,
+                    p.nombre as nombre,
+                    p.segundo_nombre as segundo_nombre,
+                    p.apellido as apellido,
+                    p.segundo_apellido as segundo_apellido,
+                    concat(
+                        p.nombre, ' ',
+                        (case when p.segundo_nombre is not null then concat(p.segundo_nombre, ' ') else '' end),
+                        p.apellido,
+                        (case when p.segundo_apellido is not null then concat(' ', p.segundo_apellido) else '' end)
+                    ) as nombre_completo,
+                    p.cedula as cedula,
+                    p.tipo_cedula as tipo_cedula,
+                    p.email as email,
+                    p.usuario as usuario,
+                    p.contrasena as contrasena,
+                    date_format(p.fecha_nacimiento, '%d/%m/%Y') as fecha_nacimiento, 
+                    date_format(p.fecha_creado, '%d/%m/%Y') as fecha_creado,
+                    p.sexo as sexo,
+                    p.estado_civil as estado_civil,
+                    p.estado as estado,
+                    (select nombre_completo from Lugar where id=p.lugar) as lugar,
+                    p.direccion as direccion
+                from Paciente as p
+                where 1=1
+                ".$query_extra."
+            ");
+
+            $query->execute();
+            $pacientes = $query->fetchAll();
+
+            for ($i = 0; $i < count($pacientes); $i++)
+            {
+                $pacientes[$i]["snombre"] = $pacientes[$i]["segundo_nombre"];
+                $pacientes[$i]["sapellido"] = $pacientes[$i]["segundo_apellido"];
+
+                /* Telefonos */
+                $query = $this->db->prepare("
+                    select 
+                        t.tlf as tlf,
+                        tt.nombre as tipo
+                    from Telefono as t, Telefono_Tipo as tt
+                    where t.tipo=tt.id and t.paciente=:pid
+                ");
+
+                $query->execute(array(
+                    ":pid" => $pacientes[$i]['id']
+                ));
+
+                $pacientes[$i]['telefonos'] = $query->fetchAll();
+            }
+
+            return json_encode($pacientes);
+        }
+
+        public function cargar_paciente($post)
+        {
+            $pacientes = json_decode($this->cargar_pacientes(array(), " and p.cedula='".$post['cedula']."'"));
+
+            return json_encode($pacientes[0]);
+        }
+
         public function cargar_curso($post)
         {
             $query = $this->db->prepare("
